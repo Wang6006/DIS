@@ -618,19 +618,23 @@ if __name__ == "__main__":
     train_datasets, valid_datasets = [], []
     dataset_1, dataset_1 = {}, {}
 
-    dataset_tr = {"name": "DIS5K-TR",
-                 "im_dir": "../DIS5K/DIS-TR/im",
-                 "gt_dir": "../DIS5K/DIS-TR/gt",
-                 "im_ext": ".jpg",
-                 "gt_ext": ".png",
-                 "cache_dir":"../DIS5K-Cache/DIS-TR"}
+    dataset_tr = {
+    "name": "DIS5K-TR",
+    "im_dir": "content/drive/MyDrive/NLCN/Dataset/DISK5K/DIS-TR/im",
+    "gt_dir": "content/drive/MyDrive/NLCN/Dataset/DISK5K/DIS-TR/gt",
+    "im_ext": ".jpg",
+    "gt_ext": ".png",
+    "cache_dir": "content/drive/MyDrive/NLCN/Dataset/DISK5K/Cache/DIS-TR"
+}
 
-    dataset_vd = {"name": "DIS5K-VD",
-                 "im_dir": "../DIS5K/DIS-VD/im",
-                 "gt_dir": "../DIS5K/DIS-VD/gt",
-                 "im_ext": ".jpg",
-                 "gt_ext": ".png",
-                 "cache_dir":"../DIS5K-Cache/DIS-VD"}
+    dataset_vd = {
+        "name": "DIS5K-VD",
+        "im_dir": "content/drive/MyDrive/NLCN/Dataset/DISK5K/DIS-VD/im",
+        "gt_dir": "content/drive/MyDrive/NLCN/Dataset/DISK5K/DIS-VD/gt",
+        "im_ext": ".jpg",
+        "gt_ext": ".png",
+        "cache_dir": "content/drive/MyDrive/NLCN/Dataset/DISK5K/Cache/DIS-VD"
+    }
 
     dataset_te1 = {"name": "DIS5K-TE1",
                  "im_dir": "../DIS5K/DIS-TE1/im",
@@ -684,7 +688,7 @@ if __name__ == "__main__":
 
     if hypar["mode"] == "train":
         hypar["valid_out_dir"] = "" ## for "train" model leave it as "", for "valid"("inference") mode: set it according to your local directory
-        hypar["model_path"] ="../saved_models/IS-Net-test" ## model weights saving (or restoring) path
+        hypar["model_path"] ="/content/drive/MyDrive/NLCN/Checkpoints/ISNet" ## model weights saving (or restoring) path
         hypar["restore_model"] = "" ## name of the segmentation model weights .pth for resume training process from last stop or for the inferencing
         hypar["start_ite"] = 0 ## start iteration for the training, can be changed to match the restored training process
         hypar["gt_encoder_model"] = ""
@@ -703,28 +707,28 @@ if __name__ == "__main__":
     ## -- 2.3. cache data spatial size --
     ## To handle large size input images, which take a lot of time for loading in training,
     #  we introduce the cache mechanism for pre-convering and resizing the jpg and png images into .pt file
-    hypar["cache_size"] = [1024, 1024] ## cached input spatial resolution, can be configured into different size
+    hypar["cache_size"] = [352, 352] ## cached input spatial resolution, can be configured into different size
     hypar["cache_boost_train"] = False ## "True" or "False", indicates wheather to load all the training datasets into RAM, True will greatly speed the training process while requires more RAM
     hypar["cache_boost_valid"] = False ## "True" or "False", indicates wheather to load all the validation datasets into RAM, True will greatly speed the training process while requires more RAM
 
     ## --- 2.4. data augmentation parameters ---
-    hypar["input_size"] = [1024, 1024] ## mdoel input spatial size, usually use the same value hypar["cache_size"], which means we don't further resize the images
-    hypar["crop_size"] = [1024, 1024] ## random crop size from the input, it is usually set as smaller than hypar["cache_size"], e.g., [920,920] for data augmentation
+    hypar["input_size"] = [352, 352] ## mdoel input spatial size, usually use the same value hypar["cache_size"], which means we don't further resize the images
+    hypar["crop_size"] = [320, 320] ## random crop size from the input, it is usually set as smaller than hypar["cache_size"], e.g., [920,920] for data augmentation
     hypar["random_flip_h"] = 1 ## horizontal flip, currently hard coded in the dataloader and it is not in use
     hypar["random_flip_v"] = 0 ## vertical flip , currently not in use
 
     ## --- 2.5. define model  ---
     print("building model...")
     hypar["model"] = ISNetDIS() #U2NETFASTFEATURESUP()
-    hypar["early_stop"] = 20 ## stop the training when no improvement in the past 20 validation periods, smaller numbers can be used here e.g., 5 or 10.
-    hypar["model_save_fre"] = 2000 ## valid and save model weights every 2000 iterations
+    hypar["early_stop"] = 10 ## stop the training when no improvement in the past 20 validation periods, smaller numbers can be used here e.g., 5 or 10.
+    hypar["model_save_fre"] = 1000 ## valid and save model weights every 2000 iterations
 
-    hypar["batch_size_train"] = 8 ## batch size for training
+    hypar["batch_size_train"] = 2 ## batch size for training
     hypar["batch_size_valid"] = 1 ## batch size for validation and inferencing
     print("batch size: ", hypar["batch_size_train"])
 
-    hypar["max_ite"] = 10000000 ## if early stop couldn't stop the training process, stop it by the max_ite_num
-    hypar["max_epoch_num"] = 1000000 ## if early stop and max_ite couldn't stop the training process, stop it by the max_epoch_num
+    hypar["max_ite"] = 50000 ## if early stop couldn't stop the training process, stop it by the max_ite_num
+    hypar["max_epoch_num"] = 100 ## if early stop and max_ite couldn't stop the training process, stop it by the max_epoch_num
 
     main(train_datasets,
          valid_datasets,
