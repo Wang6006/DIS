@@ -235,7 +235,7 @@ def valid_gt_encoder(net, valid_dataloaders, valid_datasets, hypar, epoch=0):
                 pred_val = ds_val[0][t,:,:,:] # B x 1 x H x W
 
                 ## recover the prediction spatial size to the orignal image size
-                pred_val = torch.squeeze(F.upsample(torch.unsqueeze(pred_val,0),(shapes_val[t][0],shapes_val[t][1]),mode='bilinear'))
+                pred_val = torch.squeeze(F.interpolate(torch.unsqueeze(pred_val,0),(shapes_val[t][0],shapes_val[t][1]),mode='bilinear'))
 
                 ma = torch.max(pred_val)
                 mi = torch.min(pred_val)
@@ -473,7 +473,7 @@ def valid(net, valid_dataloaders, valid_datasets, hypar, epoch=0):
                 pred_val = ds_val[0][t,:,:,:] # B x 1 x H x W
 
                 ## recover the prediction spatial size to the orignal image size
-                pred_val = torch.squeeze(F.upsample(torch.unsqueeze(pred_val,0),(shapes_val[t][0],shapes_val[t][1]),mode='bilinear'))
+                pred_val = torch.squeeze(F.interpolate(torch.unsqueeze(pred_val,0),(shapes_val[t][0],shapes_val[t][1]),mode='bilinear'))
 
                 # pred_val = normPRED(pred_val)
                 ma = torch.max(pred_val)
@@ -620,28 +620,30 @@ if __name__ == "__main__":
 
     dataset_tr = {
     "name": "DIS5K-TR",
-    "im_dir": "content/drive/MyDrive/NLCN/Dataset/DISK5K/DIS-TR/im",
-    "gt_dir": "content/drive/MyDrive/NLCN/Dataset/DISK5K/DIS-TR/gt",
+    "im_dir": "/content/drive/MyDrive/NLCN/Dataset/DIS5K/DIS-TR/im",
+    "gt_dir": "/content/drive/MyDrive/NLCN/Dataset/DIS5K/DIS-TR/gt",
     "im_ext": ".jpg",
     "gt_ext": ".png",
-    "cache_dir": "content/drive/MyDrive/NLCN/Dataset/DISK5K/Cache/DIS-TR"
+    "cache_dir": "/content/drive/MyDrive/NLCN/Dataset/DIS5K/Cache/DIS-TR"
 }
 
     dataset_vd = {
         "name": "DIS5K-VD",
-        "im_dir": "content/drive/MyDrive/NLCN/Dataset/DISK5K/DIS-VD/im",
-        "gt_dir": "content/drive/MyDrive/NLCN/Dataset/DISK5K/DIS-VD/gt",
+        "im_dir": "/content/drive/MyDrive/NLCN/Dataset/DIS5K/DIS-VD/im",
+        "gt_dir": "/content/drive/MyDrive/NLCN/Dataset/DIK5K/DIS-VD/gt",
         "im_ext": ".jpg",
         "gt_ext": ".png",
-        "cache_dir": "content/drive/MyDrive/NLCN/Dataset/DISK5K/Cache/DIS-VD"
+        "cache_dir": "/content/drive/MyDrive/NLCN/Dataset/DIS5K/Cache/DIS-VD"
     }
 
-    dataset_te1 = {"name": "DIS5K-TE1",
-                 "im_dir": "../DIS5K/DIS-TE1/im",
-                 "gt_dir": "../DIS5K/DIS-TE1/gt",
-                 "im_ext": ".jpg",
-                 "gt_ext": ".png",
-                 "cache_dir":"../DIS5K-Cache/DIS-TE1"}
+    dataset_te1 = {
+          "name": "DIS5K-VD",
+        "im_dir": "/content/drive/MyDrive/NLCN/Dataset/DIS5K/DIS-TE1/im",
+        "gt_dir": "/content/drive/MyDrive/NLCN/Dataset/DIS5K/DIS-TE1/gt",
+        "im_ext": ".jpg",
+        "gt_ext": ".png",
+        "cache_dir": "/content/drive/MyDrive/NLCN/Dataset/DIS5K/Cache/DIS-TE1"
+    }
 
     dataset_te2 = {"name": "DIS5K-TE2",
                  "im_dir": "../DIS5K/DIS-TE2/im",
@@ -673,13 +675,13 @@ if __name__ == "__main__":
 
     train_datasets = [dataset_tr] ## users can create mutiple dictionary for setting a list of datasets as training set
     # valid_datasets = [dataset_vd] ## users can create mutiple dictionary for setting a list of datasets as vaidation sets or inference sets
-    valid_datasets = [dataset_vd] # dataset_vd, dataset_te1, dataset_te2, dataset_te3, dataset_te4] # and hypar["mode"] = "valid" for inference,
+    valid_datasets = [dataset_te1] # dataset_vd, dataset_te1, dataset_te2, dataset_te3, dataset_te4] # and hypar["mode"] = "valid" for inference,
 
     ### --------------- STEP 2: Configuring the hyperparamters for Training, validation and inferencing ---------------
     hypar = {}
 
     ## -- 2.1. configure the model saving or restoring path --
-    hypar["mode"] = "train"
+    hypar["mode"] = "valid"
     ## "train": for training,
     ## "valid": for validation and inferening,
     ## in "valid" mode, it will calculate the accuracy as well as save the prediciton results into the "hypar["valid_out_dir"]", which shouldn't be ""
@@ -693,9 +695,9 @@ if __name__ == "__main__":
         hypar["start_ite"] = 0 ## start iteration for the training, can be changed to match the restored training process
         hypar["gt_encoder_model"] = ""
     else: ## configure the segmentation output path and the to-be-used model weights path
-        hypar["valid_out_dir"] = "../your-results/"##"../DIS5K-Results-test" ## output inferenced segmentation maps into this fold
-        hypar["model_path"] = "../saved_models/IS-Net" ## load trained weights from this path
-        hypar["restore_model"] = "isnet.pth"##"isnet.pth" ## name of the to-be-loaded weights
+        hypar["valid_out_dir"] = "/content/drive/MyDrive/NLCN/Results/DIS-TE1"##"../DIS5K-Results-test" ## output inferenced segmentation maps into this fold
+        hypar["model_path"] = "/content/drive/MyDrive/NLCN/ISNet" ## load trained weights from this path
+        hypar["restore_model"] = "ISNet-Model.pth"##"isnet.pth" ## name of the to-be-loaded weights
 
     # if hypar["restore_model"]!="":
     #     hypar["start_ite"] = int(hypar["restore_model"].split("_")[2])
