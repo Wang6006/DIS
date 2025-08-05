@@ -645,26 +645,14 @@ if __name__ == "__main__":
         "cache_dir": "/content/drive/MyDrive/NLCN/Dataset/DIS5K/Cache/DIS-TE1"
     }
 
-    dataset_te2 = {"name": "DIS5K-TE2",
-                 "im_dir": "../DIS5K/DIS-TE2/im",
-                 "gt_dir": "../DIS5K/DIS-TE2/gt",
-                 "im_ext": ".jpg",
-                 "gt_ext": ".png",
-                 "cache_dir":"../DIS5K-Cache/DIS-TE2"}
-
-    dataset_te3 = {"name": "DIS5K-TE3",
-                 "im_dir": "../DIS5K/DIS-TE3/im",
-                 "gt_dir": "../DIS5K/DIS-TE3/gt",
-                 "im_ext": ".jpg",
-                 "gt_ext": ".png",
-                 "cache_dir":"../DIS5K-Cache/DIS-TE3"}
-
-    dataset_te4 = {"name": "DIS5K-TE4",
-                 "im_dir": "../DIS5K/DIS-TE4/im",
-                 "gt_dir": "../DIS5K/DIS-TE4/gt",
-                 "im_ext": ".jpg",
-                 "gt_ext": ".png",
-                 "cache_dir":"../DIS5K-Cache/DIS-TE4"}
+    dataset_te2 = {
+          "name": "DIS5K-VD",
+        "im_dir": "/content/drive/MyDrive/NLCN/Dataset/DIS5K/DIS-TE2/im",
+        "gt_dir": "/content/drive/MyDrive/NLCN/Dataset/DIS5K/DIS-TE2/gt",
+        "im_ext": ".jpg",
+        "gt_ext": ".png",
+        "cache_dir": "/content/drive/MyDrive/NLCN/Dataset/DIS5K/Cache/DIS-TE2"
+    }
     ### test your own dataset
     dataset_demo = {"name": "your-dataset",
                  "im_dir": "../your-dataset/im",
@@ -675,7 +663,7 @@ if __name__ == "__main__":
 
     train_datasets = [dataset_tr] ## users can create mutiple dictionary for setting a list of datasets as training set
     # valid_datasets = [dataset_vd] ## users can create mutiple dictionary for setting a list of datasets as vaidation sets or inference sets
-    valid_datasets = [dataset_te1] # dataset_vd, dataset_te1, dataset_te2, dataset_te3, dataset_te4] # and hypar["mode"] = "valid" for inference,
+    valid_datasets = [dataset_te2] # dataset_vd, dataset_te1, dataset_te2, dataset_te3, dataset_te4] # and hypar["mode"] = "valid" for inference,
 
     ### --------------- STEP 2: Configuring the hyperparamters for Training, validation and inferencing ---------------
     hypar = {}
@@ -695,9 +683,9 @@ if __name__ == "__main__":
         hypar["start_ite"] = 0 ## start iteration for the training, can be changed to match the restored training process
         hypar["gt_encoder_model"] = ""
     else: ## configure the segmentation output path and the to-be-used model weights path
-        hypar["valid_out_dir"] = "/content/drive/MyDrive/NLCN/Results/DIS-TE1"##"../DIS5K-Results-test" ## output inferenced segmentation maps into this fold
+        hypar["valid_out_dir"] = "/content/drive/MyDrive/NLCN/Results/DIS-TE2"##"../DIS5K-Results-test" ## output inferenced segmentation maps into this fold
         hypar["model_path"] = "/content/drive/MyDrive/NLCN/ISNet" ## load trained weights from this path
-        hypar["restore_model"] = "ISNet-Model.pth"##"isnet.pth" ## name of the to-be-loaded weights
+        hypar["restore_model"] = "isnet-general-use.pth"##"isnet.pth" ## name of the to-be-loaded weights
 
     # if hypar["restore_model"]!="":
     #     hypar["start_ite"] = int(hypar["restore_model"].split("_")[2])

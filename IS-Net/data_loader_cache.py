@@ -113,25 +113,28 @@ def im_preprocess(im,size):
         return im_tensor, im.shape[0:2]
     else:
         im_tensor = torch.unsqueeze(im_tensor,0)
-        im_tensor = F.upsample(im_tensor, size, mode="bilinear")
+        im_tensor = F.interpolate(im_tensor, size, mode="bilinear")
         im_tensor = torch.squeeze(im_tensor,0)
 
     return im_tensor.type(torch.uint8), im.shape[0:2]
 
-def gt_preprocess(gt,size):
+def gt_preprocess(gt, size):
     if len(gt.shape) > 2:
-        gt = gt[:, :, 0]
+        gt = gt[:, :, 0]  # Chuyển ảnh 3D -> 2D nếu cần
 
-    gt_tensor = torch.unsqueeze(torch.tensor(gt, dtype=torch.uint8),0)
+    gt_tensor = torch.unsqueeze(torch.tensor(gt, dtype=torch.uint8), 0)
 
-    if(len(size)<2):
+    if len(size) < 2:
         return gt_tensor.type(torch.uint8), gt.shape[0:2]
     else:
-        gt_tensor = torch.unsqueeze(torch.tensor(gt_tensor, dtype=torch.float32),0)
-        gt_tensor = F.upsample(gt_tensor, size, mode="bilinear")
-        gt_tensor = torch.squeeze(gt_tensor,0)
+        # Chuyển sang float32, interpolate và squeeze
+        gt_tensor = gt_tensor.clone().detach().float()  # fix warning
+        gt_tensor = torch.unsqueeze(gt_tensor, 0)  # shape: 1 x 1 x H x W
+        gt_tensor = F.interpolate(gt_tensor, size=size, mode="bilinear", align_corners=False)
+        gt_tensor = torch.squeeze(gt_tensor, 0)  # shape: 1 x H x W
 
     return gt_tensor.type(torch.uint8), gt.shape[0:2]
+
     # return gt_tensor, gt.shape[0:2]
 
 class GOSRandomHFlip(object):
@@ -156,8 +159,8 @@ class GOSResize(object):
         # import time
         # start = time.time()
 
-        image = torch.squeeze(F.upsample(torch.unsqueeze(image,0),self.size,mode='bilinear'),dim=0)
-        label = torch.squeeze(F.upsample(torch.unsqueeze(label,0),self.size,mode='bilinear'),dim=0)
+        image = torch.squeeze(F.interpolate(torch.unsqueeze(image,0),self.size,mode='bilinear'),dim=0)
+        label = torch.squeeze(F.interpolate(torch.unsqueeze(label,0),self.size,mode='bilinear'),dim=0)
 
         # print("time for resize: ", time.time()-start)
 
